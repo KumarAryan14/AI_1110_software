@@ -8,7 +8,7 @@ class MusicPlayer:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Music Player")
-        self.root.geometry("400x200")
+        self.root.geometry("400x250")
 
         self.playlist = []
         self.current_index = -1
@@ -20,10 +20,13 @@ class MusicPlayer:
         self.btn_pause_resume = tk.Button(self.root, text="Pause", state=tk.DISABLED, command=self.pause_resume)
         self.btn_next = tk.Button(self.root, text="Next", state=tk.DISABLED, command=self.play_next)
 
+        self.lbl_current_song = tk.Label(self.root, text="No song playing")
+
         self.btn_browse.pack(pady=10)
         self.btn_previous.pack(pady=5)
         self.btn_pause_resume.pack(pady=5)
         self.btn_next.pack(pady=5)
+        self.lbl_current_song.pack(pady=10)
 
     def browse_folder(self):
         folder_path = filedialog.askdirectory()
@@ -59,17 +62,20 @@ class MusicPlayer:
     def play_next(self):
         if self.current_index < len(self.playlist) - 1:
             self.current_index += 1
+            self.update_current_song_label()
             self.play_song(self.playlist[self.current_index])
             self.btn_pause_resume.config(text="Pause")
         else:
             np.random.shuffle(self.playlist)
             self.current_index = 0
+            self.update_current_song_label()
             self.play_song(self.playlist[self.current_index])
             self.btn_pause_resume.config(text="Pause")
 
     def play_previous(self):
         if self.current_index > 0:
             self.current_index -= 1
+            self.update_current_song_label()
             self.play_song(self.playlist[self.current_index])
             self.btn_pause_resume.config(text="Pause")
 
@@ -82,6 +88,10 @@ class MusicPlayer:
             mixer.music.unpause()
             self.paused = False
             self.btn_pause_resume.config(text="Pause")
+
+    def update_current_song_label(self):
+        current_song = os.path.basename(self.playlist[self.current_index])
+        self.lbl_current_song.config(text="Now playing: " + current_song)
 
     def run(self):
         self.root.mainloop()
